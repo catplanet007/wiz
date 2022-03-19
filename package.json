@@ -1,0 +1,8 @@
+{
+  "name": "wiz",
+  "version": "1.0.0",
+  "main": "main.js",
+  "repository": "git@github.com:catplanet007/wiz.git",
+  "author": "catplanet <catplanet@qq.com>",
+  "license": "GPL2"
+}
