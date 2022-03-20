@@ -1,7 +1,8 @@
-const boot = require('./sys/boot');
+
+import * as boot from './sys/core/boot.js';
 
 async function main() {
-    boot.wiz.boot({
+    boot.info.wiz.boot({
         dirs: ['./resource'],
     });
 }

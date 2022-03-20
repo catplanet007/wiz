@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+import * as fs from 'fs';
+import * as path from 'path';
 
 function mount(name, info) {
     const { holder, mountAt } = calcMountAt(name);
@@ -31,9 +31,9 @@ function calcMountAt(name) {
 
 const sources = new Map();
 
-function loadFile(filepath, option = {}) {
+async function loadFile(filepath, option = {}) {
     if (option?.load) {
-        const info = option.load(filepath);
+        const info = await option.load(filepath);
         if (mount(info.name, info)) {
             return;
         }
@@ -42,7 +42,7 @@ function loadFile(filepath, option = {}) {
     }
     for (const loader of wiz.loaders) {
         if (loader.loadable(filepath)) {
-            const info = loader.load(filepath);
+            const info = await loader.load(filepath);
             if (mount(info.name, info)) {
                 return;
             }
@@ -53,15 +53,15 @@ function loadFile(filepath, option = {}) {
     console.warn(`no loader can load ${filepath}`);
 }
 
-function loadDir(dir) {
+async function loadDir(dir) {
     const filenames = fs.readdirSync(dir);
     for (const filename of filenames) {
         const filepath = path.join(dir, filename);
         var stat = fs.statSync(filepath);
         if (stat.isFile()) {
-            loadFile(filepath);
+            await loadFile(filepath);
         } else if (stat.isDirectory()) {
-            loadDir(filepath);
+            await loadDir(filepath);
         }
     }
 }
@@ -93,8 +93,8 @@ function registerCore(info) {
     }
 }
 
-module.exports = {
-    name: '$/core',
+export const info = {
+    name: '$/core/wiz',
     type: wiz.type.CORE,
     wiz: {
         loadFile,

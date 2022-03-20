@@ -1,35 +1,14 @@
-const fs = require('fs');
-const path = require('path');
+import * as fs from 'fs';
+import * as path from 'path';
 
-const rootPath = path.resolve(__dirname, '../../');
-
-function newFunction(code) {
-    return () => {
-        const codeExports = {};
-        const codeModule = {
-            exports: codeExports,
-        };
-        return new Function(
-            'exports',
-            'require',
-            'module',
-            '__filename',
-            '__dirname',
-            `${code};
-            return Object.assign(module.exports, exports);`
-        )(codeExports, require, codeModule, __filename, __dirname);
-    }
-}
-
-function load(filepath) {
-    filepath = path.resolve(rootPath, filepath);
+async function load(filepath) {
+    filepath = path.join(wiz.env.root, filepath);
 
     const content = fs.readFileSync(filepath, {
         encoding: 'utf-8',
     });
 
-    const fn = newFunction(content);
-    let info = fn();
+    let info = (await import(filepath)).info;
 
     info = Object.assign({}, { ...info });
     info = Object.assign(info, {
@@ -44,7 +23,7 @@ function loadable(filepath) {
     return '.js' === path.extname(filepath);
 }
 
-module.exports = {
+export const info = {
     name: '$/loader/js',
     type: wiz.type.LOADER,
     wiz: {
